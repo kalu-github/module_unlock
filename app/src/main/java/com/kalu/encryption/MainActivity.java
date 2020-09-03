@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import lib.kalu.unlock.fingerprints.FingerprintDialog;
 import lib.kalu.unlock.gesture.GestureView;
 import lib.kalu.unlock.gesture.GestureresultView;
 
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                FingerprintDialog fingerprintDialog = new FingerprintDialog();
+                fingerprintDialog.show(getSupportFragmentManager(), FingerprintDialog.TAG);
             }
         });
 
