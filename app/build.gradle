@@ -1,0 +1,102 @@
+apply plugin: rootProject.ext.plugin.com_android_application
+apply plugin: rootProject.ext.plugin.andresguard
+apply plugin: rootProject.ext.plugin.fastclick
+
+aspectjx {
+    //include 'cn.appblog.common.utils.click.SingleClickAspect'
+    // fix Didn't find class "com.umeng.message.provider.MessageProvider" on path: DexPathList
+    exclude 'com.umeng.message'
+}
+
+android {
+
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    defaultConfig {
+
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        vectorDrawables.useSupportLibrary = true
+
+        //添加此行
+        flavorDimensions "default"
+    }
+
+    applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                variant.productFlavors.each { flavor ->
+                    def date = new Date().format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT+08"))
+                    outputFileName = "unlock_" + flavor.name + "_v" + defaultConfig.versionName + "_" + date + ".apk"
+                }
+            }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("debug.jks")
+            storePassword "123456"
+            keyAlias "debug"
+            keyPassword "123456"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+        debug {
+            storeFile file("debug.jks")
+            storePassword "123456"
+            keyAlias "debug"
+            keyPassword "123456"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        release {
+            useProguard true
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            multiDexEnabled true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            useProguard false
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            multiDexEnabled true
+            signingConfig signingConfigs.debug
+            ext.alwaysUpdateBuildId = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // 模块依赖
+    implementation project(':lib_unlock')
+
+    // 三方依赖
+    implementation rootProject.ext.dependencies.support_activity
+    implementation rootProject.ext.dependencies.support_fragment
+    implementation rootProject.ext.dependencies.support_annotation
+    implementation rootProject.ext.dependencies.support_appcompat
+    implementation rootProject.ext.dependencies.support_coordinatorlayout
+}
